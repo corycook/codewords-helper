@@ -1,0 +1,8 @@
+{
+  "name": "codewords-helper",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/corycook/codewords-helper.git",
+  "author": "Cory Cook <clovecooks@gmail.com>",
+  "license": "MIT"
+}
