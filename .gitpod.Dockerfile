@@ -9,12 +9,9 @@ FROM gitpod/workspace-full
 #
 # More information: https://www.gitpod.io/docs/config-docker/
 
-USER root
-
-RUN apt-get update && apt-get install pkg-config zip g++ zlib1g-dev unzip python
-
 USER gitpod
 
+RUN sudo apt-get update && apt-get install pkg-config zip g++ zlib1g-dev unzip python
 RUN wget https://github.com/bazelbuild/bazel/releases/download/0.24.1/bazel-0.24.1-installer-linux-x86_64.sh
 RUN chmod +x bazel-0.24.1-installer-linux-x86_64.sh
 RUN ./bazel-0.24.1-installer-linux-x86_64.sh --user
