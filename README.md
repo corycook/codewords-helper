@@ -5,5 +5,5 @@ clues.
 
 Required environment variables:
 
-- _WORDASSOCIATIONS_NET_API_KEY_ API:  Key for 
+- WORDASSOCIATIONS_NET_API_KEY:  Key for 
   [wordassociations.net](http://wordassociations.net) API

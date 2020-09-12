@@ -4,5 +4,15 @@
   "main": "index.js",
   "repository": "https://github.com/corycook/codewords-helper.git",
   "author": "Cory Cook <clovecooks@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "start": "tsc && node dist/index.js"
+  },
+  "dependencies": {
+    "apollo-server": "^2.17.0",
+    "dotenv": "^8.2.0",
+    "graphql-schema-bindings": "^0.11.3",
+    "node-fetch": "^2.6.1",
+    "typescript": "^4.0.2"
+  }
 }
