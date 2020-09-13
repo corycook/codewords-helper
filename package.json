@@ -6,13 +6,23 @@
   "author": "Cory Cook <clovecooks@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "tsc && node dist/index.js"
+    "start": "(tsc && node dist/index.js) & parcel frontend/index.html"
   },
   "dependencies": {
+    "@apollo/client": "^3.1.5",
+    "@material-ui/core": "^4.11.0",
+    "@types/react": "^16.9.49",
+    "@types/react-dom": "^16.9.8",
     "apollo-server": "^2.17.0",
     "dotenv": "^8.2.0",
     "graphql-schema-bindings": "^0.11.3",
     "node-fetch": "^2.6.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "typescript": "^4.0.2"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4",
+    "sass": "^1.26.10"
   }
 }

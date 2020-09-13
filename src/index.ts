@@ -8,23 +8,6 @@ import fetch from 'node-fetch';
 const WORDASSOCIATIONS_NET_URL =
     'https://api.wordassociations.net/associations/v1.0/json/search';
 
-interface WordAssociationsSearchResponse {
-  version: string;
-  code: number;
-  request: {
-    text: string[]; lang: 'en'; type: 'stimulus' | 'response'; limit: number;
-    pos: string;  // e.g. "noun,adjective,verb,adverb"
-    indent: 'yes' | 'no'
-  };
-  response: Array<{
-    text: string,
-    items: Array<{
-      item: string; weight: number;
-      pos: 'noun' | 'adjective' | 'verb' | 'adjective';
-    }>
-  }>;
-}
-
 @type
 class Query {
   @field(() => [Association])
@@ -35,12 +18,18 @@ class Query {
   }
 
   @field(() => [Codeword])
-  async codewords(@arg([String]) words: string[]): Promise<Codeword[]> {
+  async codewords(@arg([String]) words: string[], @arg([
+                    String
+                  ]) exclude: string[]): Promise<Codeword[]> {
     const all = await this.stimuli(words);
+    const excluded = await this.stimuli(exclude);
     const grouped = groupWordAssociations(all);
-    return Object.keys(grouped)
-        .map(word => new Codeword({word, matches: grouped[word]}))
-        .sort((l, r) => r.weight - l.weight);
+    const codewords =
+        Object.keys(grouped)
+            .map(word => new Codeword({word, matches: grouped[word]}))
+            .sort((l, r) => r.weight - l.weight);
+    return excludeTerms(
+        codewords, excluded.flatMap(e => [e.word, e.relatedWord]));
   }
 }
 
@@ -68,7 +57,7 @@ class Association {
 
 @type
 class Codeword {
-  @field() private readonly word: string;
+  @field() public readonly word: string;
   private readonly matches: Association[];
 
   constructor(data: {word: string, matches: Association[]}) {
@@ -110,6 +99,23 @@ async function getWordAssociations(text: string[] = []):
   return response.json();
 }
 
+interface WordAssociationsSearchResponse {
+  version: string;
+  code: number;
+  request: {
+    text: string[]; lang: 'en'; type: 'stimulus' | 'response'; limit: number;
+    pos: string;  // e.g. "noun,adjective,verb,adverb"
+    indent: 'yes' | 'no'
+  };
+  response: Array<{
+    text: string,
+    items: Array<{
+      item: string; weight: number;
+      pos: 'noun' | 'adjective' | 'verb' | 'adjective';
+    }>
+  }>;
+}
+
 function groupWordAssociations(associations: Association[]):
     {[word: string]: Association[]} {
   return associations.reduce(
@@ -121,6 +127,12 @@ function groupWordAssociations(associations: Association[]):
       {} as {[word: string]: Association[]});
 }
 
+function excludeTerms(codewords: Codeword[], terms: string[]) {
+  return codewords.filter(
+      codeword => !terms.some(
+          term => codeword.word.toLowerCase() === term.toLowerCase()));
+}
+
 /**
  * Now we are ready to create our ApolloServer and start listening for requests.
  */
@@ -128,4 +140,4 @@ const server = new ApolloServer({
   schema: createSchema(Query),
   context: new Query(),
 });
-server.listen().then(({url}) => console.log(`Server ready at ${url}`));
+server.listen(4000).then(({url}) => console.log(`Server ready at ${url}`));
